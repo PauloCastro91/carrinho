@@ -1,26 +1,36 @@
 package br.com.carrinho.modelo;
 
+import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.hibernate.annotations.Cascade;
+
+import br.com.carrinho.dao.ItemDAO;
+
 @Entity
-public class Carrinho {
+public class Carrinho implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "carrinho")
+	@OneToMany(mappedBy = "carrinho")
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
 	private Set<Item> itens;
 
-	private Double total;
 
 	public void adicionaProduto(Produto produto, Integer quantidade) {
 		Item item = new Item();
@@ -28,11 +38,38 @@ public class Carrinho {
 		item.setQuantidade(quantidade);
 		item.setCarrinho(this);
 
-		if (itens == null) {
-			itens = new HashSet<Item>();
+		if (this.itens == null) {
+			this.itens = new HashSet<Item>();
 		}
 
-		itens.add(item);
+		this.itens.add(item);
+	}
+	
+	public void removeProduto(Produto produto){
+		if (this.itens != null) {
+			for(Iterator<Item> it = this.itens.iterator(); it.hasNext();){
+				Item next = it.next();
+				if(next.getProduto().getId().equals(produto.getId())){
+					next.setCarrinho(null);
+					it.remove();
+					break;
+				}
+			}
+		}
+		new ItemDAO().removeItem(produto, this);
+	}
+
+	public double retornaTotal() {
+		double total = 0.0;
+		if (this.itens != null) {
+			for (Item item : this.itens) {
+				total += (item.getProduto().getPreco() * item.getQuantidade());
+			}
+		}
+		System.out.println("****************************************");
+		System.out.println("Total: " + total);
+		System.out.println("****************************************");
+		return total;
 	}
 
 	public Integer getId() {
@@ -49,13 +86,5 @@ public class Carrinho {
 
 	public void setItens(Set<Item> itens) {
 		this.itens = itens;
-	}
-
-	public Double getTotal() {
-		return total;
-	}
-
-	public void setTotal(Double total) {
-		this.total = total;
 	}
 }

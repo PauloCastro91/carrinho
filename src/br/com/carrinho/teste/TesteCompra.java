@@ -1,31 +1,44 @@
 package br.com.carrinho.teste;
 
-import javax.persistence.EntityManager;
-
+import br.com.carrinho.dao.CarrinhoDAO;
+import br.com.carrinho.dao.ProdutoDAO;
 import br.com.carrinho.modelo.Carrinho;
 import br.com.carrinho.modelo.Produto;
-import br.com.carrinho.util.JPAUtil;
 
 public class TesteCompra {
 	public static void main(String[] args) {
 		carregaProdutos();
 
-		EntityManager manager = new JPAUtil().getEntityManager();
-		manager.getTransaction().begin();
+		CarrinhoDAO carrinhoDAO = new CarrinhoDAO();
+		ProdutoDAO produtoDAO = new ProdutoDAO();
+
 		Carrinho carrinho = new Carrinho();
+		Produto produto = produtoDAO.find(new Produto(), 1);
 
-		carrinho.adicionaProduto(manager.find(Produto.class, 2), 3);
-		manager.persist(carrinho);
-		manager.getTransaction().commit();
+		carrinho.adicionaProduto(produto, 2);
+		carrinhoDAO.save(carrinho);
+		carrinho.retornaTotal();
+		
+		carrinho = carrinhoDAO.find(new Carrinho(), 1);
 
-		manager.close();
+		produto = produtoDAO.find(new Produto(), 2);
+		carrinho.adicionaProduto(produto, 1);
+		carrinhoDAO.merge(carrinho);
+		carrinho.retornaTotal();
+
+		produto = produtoDAO.find(new Produto(), 1);
+		carrinho.removeProduto(produto);
+		carrinho.retornaTotal();
+		
+
+		produto = produtoDAO.find(new Produto(), 2);
+		carrinho.removeProduto(produto);
+		carrinho.retornaTotal();
+		
 	}
 
 	public static void carregaProdutos() {
-
-		EntityManager manager = new JPAUtil().getEntityManager();
-
-		manager.getTransaction().begin();
+		ProdutoDAO produtoDAO = new ProdutoDAO();
 
 		for (int i = 1; i <= 10; i++) {
 			Produto produto = new Produto();
@@ -33,12 +46,8 @@ public class TesteCompra {
 			produto.setPreco(299.0);
 			produto.setDescricao("Camisa destinada a atividades esportivas");
 
-			manager.persist(produto);
+			produtoDAO.save(produto);
 		}
-		manager.getTransaction().commit();
-
-		manager.close();
-
 	}
-	
+
 }
