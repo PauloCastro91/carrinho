@@ -12,7 +12,12 @@ import br.com.carrinho.util.JPAUtil;
 public abstract class GenericDAO<T extends Serializable> {
 	protected EntityManager manager;
 	protected EntityTransaction t;
+	protected Class classe;
 
+	public GenericDAO(Class classe){
+		this.classe = classe;
+	}
+	
 	public void save(T object) {
 		try {
 			beginTransaction();
@@ -46,11 +51,12 @@ public abstract class GenericDAO<T extends Serializable> {
 		}
 	}
 
-	public T find(T claszz, Integer id) {
+	public T find(Integer id) {
 		T obj = null;
 		try {
 			beginTransaction();
-			obj = (T) manager.find(claszz.getClass(), id);
+			//obj = (T) manager.find(classe.getClass(), id);
+			obj = (T) manager.find(classe, id);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -59,11 +65,11 @@ public abstract class GenericDAO<T extends Serializable> {
 		return obj;
 	}
 
-	public List<T> findAll(T claszz) {
+	public List<T> findAll() {
 		List<T> objects = null;
 		try {
 			beginTransaction();
-			Query query = manager.createQuery("from " + claszz.getClass().getName());
+			Query query = manager.createQuery("from " + classe.getName());
 			objects = query.getResultList();
 		} catch (Exception e) {
 			e.printStackTrace();

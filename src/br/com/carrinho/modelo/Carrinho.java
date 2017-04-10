@@ -13,7 +13,9 @@ import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Cascade;
 
+import br.com.carrinho.dao.CarrinhoDAO;
 import br.com.carrinho.dao.ItemDAO;
+import br.com.carrinho.dao.ProdutoDAO;
 
 @Entity
 public class Carrinho implements Serializable {
@@ -28,47 +30,50 @@ public class Carrinho implements Serializable {
 	private Integer id;
 
 	@OneToMany(mappedBy = "carrinho")
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+	@Cascade(org.hibernate.annotations.CascadeType.ALL)
 	private Set<Item> itens;
-
 
 	public void adicionaProduto(Produto produto, Integer quantidade) {
 		Item item = new Item();
-		item.setProduto(produto);
+		item.setProduto(new ProdutoDAO().find(produto.getId()));
 		item.setQuantidade(quantidade);
 		item.setCarrinho(this);
 
 		if (this.itens == null) {
 			this.itens = new HashSet<Item>();
 		}
-
 		this.itens.add(item);
+
+		if (this.id != null) {
+			new CarrinhoDAO().merge(this);
+		} else {
+			new CarrinhoDAO().save(this);
+		}
 	}
-	
-	public void removeProduto(Produto produto){
-		if (this.itens != null) {
-			for(Iterator<Item> it = this.itens.iterator(); it.hasNext();){
-				Item next = it.next();
-				if(next.getProduto().getId().equals(produto.getId())){
-					next.setCarrinho(null);
-					it.remove();
-					break;
-				}
+
+	public void removeProduto(Produto produto) {
+		for (Iterator<Item> it = getItens().iterator(); it.hasNext();) {
+			Item next = it.next();
+			if (next.getProduto().getId().equals(produto.getId())) {
+				next.setCarrinho(null);
+				it.remove();
+				break;
 			}
+		}
+		if (getItens().size() == 0) {
+			this.itens = null;
 		}
 		new ItemDAO().removeItem(produto, this);
 	}
 
 	public double retornaTotal() {
 		double total = 0.0;
-		if (this.itens != null) {
-			for (Item item : this.itens) {
+		Set<Item> lista = getItens();
+		if (lista != null) {
+			for (Item item : lista) {
 				total += (item.getProduto().getPreco() * item.getQuantidade());
 			}
 		}
-		System.out.println("****************************************");
-		System.out.println("Total: " + total);
-		System.out.println("****************************************");
 		return total;
 	}
 
@@ -81,6 +86,9 @@ public class Carrinho implements Serializable {
 	}
 
 	public Set<Item> getItens() {
+		if (itens == null) {
+			itens = new ItemDAO().getItensByCarrinho(this);
+		}
 		return itens;
 	}
 

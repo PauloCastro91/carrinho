@@ -22,6 +22,14 @@ public class Produto  implements Serializable{
 	private Double preco;
 	private String descricao;
 
+	public Produto(){
+		
+	}
+	
+	public Produto(Integer id){
+		this.id = id;
+	}
+	
 	public Integer getId() {
 		return id;
 	}
