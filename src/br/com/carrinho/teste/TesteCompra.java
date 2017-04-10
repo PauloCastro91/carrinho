@@ -22,7 +22,7 @@ public class TesteCompra {
 		carrinho.adicionaProduto(produto, 2);
 		System.out.println("1. " + carrinho.retornaTotal());
 		
-		carrinho = carrinhoDAO.find(new Carrinho(), 1);
+		carrinho = carrinhoDAO.find(1);
 
 		carrinho.adicionaProduto(new Produto(2), 1);
 		System.out.println("2. " + carrinho.retornaTotal());

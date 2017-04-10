@@ -52,6 +52,7 @@ public class Carrinho implements Serializable {
 	}
 
 	public void removeProduto(Produto produto) {
+		produto = new ProdutoDAO().find(produto.getId());
 		for (Iterator<Item> it = getItens().iterator(); it.hasNext();) {
 			Item next = it.next();
 			if (next.getProduto().getId().equals(produto.getId())) {
@@ -60,7 +61,7 @@ public class Carrinho implements Serializable {
 				break;
 			}
 		}
-		if (getItens().size() == 0) {
+		if (getItens() != null && getItens().size() == 0) {
 			this.itens = null;
 		}
 		new ItemDAO().removeItem(produto, this);

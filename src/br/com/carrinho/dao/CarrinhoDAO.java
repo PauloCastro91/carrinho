@@ -10,7 +10,7 @@ public class CarrinhoDAO extends GenericDAO<Carrinho> {
 		super(Carrinho.class);
 	}
 	
-	public Carrinho find(Carrinho clazz, Integer id) {
+	public Carrinho find(Integer id) {
 		Carrinho c = null;
 		try {
 			beginTransaction();
