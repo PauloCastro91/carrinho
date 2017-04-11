@@ -9,8 +9,9 @@ import br.com.carrinho.util.PopulaBanco;
 public class TesteCompra {
 	public static void main(String[] args) {
 		
-		PopulaBanco.populaBancoDeDados();
+		PopulaBanco.populaBanco();
 
+		
 		CarrinhoDAO carrinhoDAO = new CarrinhoDAO();
 		ProdutoDAO produtoDAO = new ProdutoDAO();
 
@@ -32,6 +33,7 @@ public class TesteCompra {
 
 		carrinho.removeProduto(new Produto(2));
 		System.out.println("4. " + carrinho.retornaTotal()); 
+		
 	}
 
 }

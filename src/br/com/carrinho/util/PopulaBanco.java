@@ -4,7 +4,8 @@ import br.com.carrinho.dao.ProdutoDAO;
 import br.com.carrinho.modelo.Produto;
 
 public class PopulaBanco {
-	public static void populaBancoDeDados() {
+	
+	public static void populaBanco() {
 		ProdutoDAO produtoDAO = new ProdutoDAO();
 
 		for (int i = 1; i <= 10; i++) {

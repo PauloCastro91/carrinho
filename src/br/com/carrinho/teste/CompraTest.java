@@ -22,10 +22,10 @@ public class CompraTest extends TestCase {
 
 		List<Produto> all = produtoDao.findAll();
 		if (all == null || all.isEmpty()) {
-			PopulaBanco.populaBancoDeDados();
+			PopulaBanco.populaBanco();
 		}
 	}
-
+	
 	public void testAdicionaCarrinho() throws Exception {
 		System.out.println("Executadando testAdicionaCarrinho()");
 
@@ -67,4 +67,5 @@ public class CompraTest extends TestCase {
 			assertTrue(c == null || c.getId() == null);
 		}
 	}
+	
 }
