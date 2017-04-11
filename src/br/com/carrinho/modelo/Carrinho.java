@@ -38,12 +38,23 @@ public class Carrinho implements Serializable {
 		item.setProduto(new ProdutoDAO().find(produto.getId()));
 		item.setQuantidade(quantidade);
 		item.setCarrinho(this);
-
 		if (this.itens == null) {
 			this.itens = new HashSet<Item>();
 		}
-		this.itens.add(item);
 
+		boolean produtoExiste = false;
+		for (Iterator<Item> it = this.itens.iterator(); it.hasNext();) {
+			Item next = it.next();
+			if (next.getProduto().getId().equals(produto.getId())) {
+				next.setQuantidade(item.getQuantidade());
+				produtoExiste = true;
+				break;
+			}
+		}
+		if(!produtoExiste){
+			this.itens.add(item);
+		}
+		
 		if (this.id != null) {
 			new CarrinhoDAO().merge(this);
 		} else {

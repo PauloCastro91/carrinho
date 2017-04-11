@@ -6,16 +6,18 @@ import br.com.carrinho.modelo.Carrinho;
 
 public class CarrinhoDAO extends GenericDAO<Carrinho> {
 
-	public CarrinhoDAO(){
+	public CarrinhoDAO() {
 		super(Carrinho.class);
 	}
-	
+
 	public Carrinho find(Integer id) {
-		Carrinho c = null;
+		Carrinho c = new Carrinho();
 		try {
 			beginTransaction();
 			c = manager.find(Carrinho.class, id);
-			Hibernate.initialize(c.getItens());
+			if (c != null && c.getId() != null) {
+				Hibernate.initialize(c.getItens());
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -23,7 +25,7 @@ public class CarrinhoDAO extends GenericDAO<Carrinho> {
 		}
 		return c;
 	}
-	
+
 	public void delete(Carrinho c) {
 		try {
 			beginTransaction();
